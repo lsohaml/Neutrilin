@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* In Tailwind v4, we use standard CSS for the body to avoid errors */
+body {
+  background-color: #f8fafc; /* This is the same as slate-50 */
+  color: #0f172a;            /* This is the same as slate-900 */
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
