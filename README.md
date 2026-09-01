@@ -29,7 +29,7 @@ Progress endpoints: `POST /progress/weight` logs a periodic weight; `GET /progre
 
 ## Deployment configuration
 
-Deploy the API and UI separately. Set `CORS_ORIGIN` on the API to the deployed NutriGuide URL, and set `VITE_API_BASE_URL` in the frontend to the deployed API URL. Use the respective `.env.example` files as starting points; never place server secrets in the frontend environment.
+Deploy the API and UI separately. Set `CORS_ORIGIN` on the API to the deployed Neutrilin URL, and set `VITE_API_BASE_URL` in the frontend to the deployed API URL. Use the respective `.env.example` files as starting points; never place server secrets in the frontend environment.
 
 Run the initial API checks with `npm test`.
 

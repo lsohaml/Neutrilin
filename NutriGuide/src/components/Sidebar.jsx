@@ -12,7 +12,7 @@ export default function Sidebar() {
   return (
     <div className="w-64 h-screen bg-white border-r border-slate-100 flex flex-col p-4 fixed left-0 top-0">
       <div className="p-4 mb-8">
-        <h1 className="text-2xl font-black text-brand-600 tracking-tighter italic">NutriGuide</h1>
+        <h1 className="text-2xl font-black text-brand-600 tracking-tighter italic">Neutrilin</h1>
       </div>
       
       <nav className="space-y-2">
