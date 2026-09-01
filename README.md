@@ -20,6 +20,7 @@ Available endpoints:
 - `POST` / `GET /profile/goal` to save or retrieve a desired weight or BMI
 - `GET /calorie-target` for an explainable, safety-bounded daily calorie estimate
 - `GET /nutrient-flags` for conservative nutrition considerations tied to conditions the user entered
+- `GET /suggestions` for cached, data-grounded AI wellness suggestions (requires `ANTHROPIC_API_KEY`)
 
 Run the initial API checks with `npm test`.
 

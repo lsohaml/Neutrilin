@@ -55,6 +55,13 @@ const prisma = {
     },
     findUnique: async ({ where: { userId } }) => goals.get(userId) || null,
   },
+  dailyLog: {
+    findUnique: async () => null,
+  },
+  suggestionCache: {
+    findUnique: async () => null,
+    upsert: async () => null,
+  },
 };
 
 const app = createApp(prisma);
@@ -111,6 +118,9 @@ test('authenticated users can complete and retrieve their profile', async () => 
   const nutrientFlags = await request(app).get('/nutrient-flags').set(auth);
   assert.equal(nutrientFlags.status, 200);
   assert.equal(nutrientFlags.body.flags[0].considerations[0].nutrient, 'Iron');
+
+  const suggestions = await request(app).get('/suggestions').set(auth);
+  assert.equal(suggestions.status, 503);
 
   const loaded = await request(app).get('/profile').set(auth);
   assert.equal(loaded.status, 200);
