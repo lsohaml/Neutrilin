@@ -84,6 +84,8 @@ test('authenticated users can complete and retrieve their profile', async () => 
     heightCm: 170,
     currentWeightKg: 70,
     activityLevel: 'moderately_active',
+    age: 30,
+    sexForCalculation: 'female',
   });
   assert.equal(saveProfile.status, 200);
   assert.equal(saveProfile.body.profile.bmi, 24.2);
@@ -100,6 +102,11 @@ test('authenticated users can complete and retrieve their profile', async () => 
   const goal = await request(app).post('/profile/goal').set(auth).send({ targetWeightKg: 65, targetDate: '2026-12-31' });
   assert.equal(goal.status, 200);
   assert.equal(goal.body.goal.targetWeightKg, 65);
+
+  const calorieTarget = await request(app).get('/calorie-target').set(auth);
+  assert.equal(calorieTarget.status, 200);
+  assert.equal(calorieTarget.body.direction, 'lose');
+  assert.equal(calorieTarget.body.calorieTarget, 1751);
 
   const loaded = await request(app).get('/profile').set(auth);
   assert.equal(loaded.status, 200);

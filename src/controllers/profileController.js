@@ -7,6 +7,8 @@ const profileSchema = z.object({
   heightCm: z.coerce.number().min(80).max(250),
   currentWeightKg: z.coerce.number().min(25).max(400),
   activityLevel: z.enum(activityLevels),
+  age: z.coerce.number().int().min(18).max(120).optional(),
+  sexForCalculation: z.enum(['female', 'male']).optional(),
 });
 
 const conditionSchema = z.object({

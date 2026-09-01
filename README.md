@@ -18,6 +18,7 @@ Available endpoints:
 - `POST /profile/medical-record` for a user to enter their own medical-record summary
 - `POST` / `DELETE /profile/medical-conditions` to manage self-reported conditions
 - `POST` / `GET /profile/goal` to save or retrieve a desired weight or BMI
+- `GET /calorie-target` for an explainable, safety-bounded daily calorie estimate
 
 Run the initial API checks with `npm test`.
 
