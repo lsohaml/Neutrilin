@@ -25,6 +25,12 @@ Available endpoints:
 
 Food entries are manual estimates for now. The `FoodEntry` model is the extension point for a future food-database or barcode lookup.
 
+Progress endpoints: `POST /progress/weight` logs a periodic weight; `GET /progress` returns the history and a clearly labeled, simple time-to-goal illustration.
+
+## Deployment configuration
+
+Deploy the API and UI separately. Set `CORS_ORIGIN` on the API to the deployed NutriGuide URL, and set `VITE_API_BASE_URL` in the frontend to the deployed API URL. Use the respective `.env.example` files as starting points; never place server secrets in the frontend environment.
+
 Run the initial API checks with `npm test`.
 
 Medical information is never pre-populated. Users enter it themselves; this demo does not diagnose conditions or interpret a record as medical advice.

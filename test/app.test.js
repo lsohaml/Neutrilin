@@ -11,6 +11,7 @@ const profiles = new Map();
 const conditions = new Map();
 const goals = new Map();
 const foodEntries = [];
+const weightEntries = [];
 let nextConditionId = 1;
 const prisma = {
   user: {
@@ -67,6 +68,16 @@ const prisma = {
       return entry;
     },
     findMany: async ({ where: { userId, loggedAt } }) => foodEntries.filter((entry) => entry.userId === userId && (!loggedAt || (entry.loggedAt >= loggedAt.gte && entry.loggedAt < loggedAt.lt))),
+  },
+  weightEntry: {
+    upsert: async ({ where: { userId_recordedAt: { userId, recordedAt } }, update, create }) => {
+      const existing = weightEntries.find((entry) => entry.userId === userId && entry.recordedAt.getTime() === recordedAt.getTime());
+      if (existing) { Object.assign(existing, update); return existing; }
+      const entry = { id: `weight-${weightEntries.length + 1}`, ...create, createdAt };
+      weightEntries.push(entry);
+      return entry;
+    },
+    findMany: async ({ where: { userId } }) => weightEntries.filter((entry) => entry.userId === userId).sort((a, b) => a.recordedAt - b.recordedAt),
   },
   suggestionCache: {
     findUnique: async () => null,
@@ -135,6 +146,14 @@ test('authenticated users can complete and retrieve their profile', async () => 
   const summary = await request(app).get('/logs/summary?date=2026-09-01').set(auth);
   assert.equal(summary.status, 200);
   assert.equal(summary.body.remainingCalories, 1431);
+
+  const firstWeight = await request(app).post('/progress/weight').set(auth).send({ weightKg: 70, recordedAt: '2026-08-01T00:00:00.000Z' });
+  assert.equal(firstWeight.status, 201);
+  await request(app).post('/progress/weight').set(auth).send({ weightKg: 69, recordedAt: '2026-09-01T00:00:00.000Z' });
+  const progress = await request(app).get('/progress').set(auth);
+  assert.equal(progress.status, 200);
+  assert.equal(progress.body.progress.percent, 20);
+  assert.equal(progress.body.progress.estimatedWeeksRemaining, 8);
 
   const suggestions = await request(app).get('/suggestions').set(auth);
   assert.equal(suggestions.status, 503);
