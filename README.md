@@ -14,5 +14,11 @@ Available endpoints:
 - `POST /auth/signup` with `email` and `password`
 - `POST /auth/login` with `email` and `password`
 - `GET /health/me` with `Authorization: Bearer <token>`
+- `POST` / `GET /profile` to save or retrieve body measurements and activity level
+- `POST /profile/medical-record` for a user to enter their own medical-record summary
+- `POST` / `DELETE /profile/medical-conditions` to manage self-reported conditions
+- `POST` / `GET /profile/goal` to save or retrieve a desired weight or BMI
 
 Run the initial API checks with `npm test`.
+
+Medical information is never pre-populated. Users enter it themselves; this demo does not diagnose conditions or interpret a record as medical advice.

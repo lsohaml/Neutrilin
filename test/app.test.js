@@ -7,6 +7,10 @@ process.env.JWT_SECRET = 'test-secret-that-is-long-enough';
 
 const createdAt = new Date('2026-09-01T00:00:00.000Z');
 const users = new Map();
+const profiles = new Map();
+const conditions = new Map();
+const goals = new Map();
+let nextConditionId = 1;
 const prisma = {
   user: {
     findUnique: async ({ where: { email } }) => users.get(email) || null,
@@ -15,6 +19,41 @@ const prisma = {
       users.set(user.email, user);
       return user;
     },
+  },
+  profile: {
+    upsert: async ({ where: { userId }, update, create }) => {
+      const record = profiles.get(userId) || { id: `profile-${userId}`, createdAt };
+      const profile = { ...record, ...(profiles.has(userId) ? update : create), updatedAt: createdAt };
+      profiles.set(userId, profile);
+      return profile;
+    },
+    findUnique: async ({ where: { userId } }) => profiles.get(userId) || null,
+    update: async ({ where: { userId }, data }) => {
+      const profile = { ...profiles.get(userId), ...data, updatedAt: createdAt };
+      profiles.set(userId, profile);
+      return profile;
+    },
+  },
+  medicalCondition: {
+    create: async ({ data }) => {
+      const condition = { id: `condition-${nextConditionId++}`, ...data };
+      conditions.set(condition.id, condition);
+      return condition;
+    },
+    findMany: async ({ where: { userId } }) => [...conditions.values()].filter((item) => item.userId === userId),
+    findFirst: async ({ where: { id, userId } }) => {
+      const condition = conditions.get(id);
+      return condition?.userId === userId ? condition : null;
+    },
+    delete: async ({ where: { id } }) => conditions.delete(id),
+  },
+  weightGoal: {
+    upsert: async ({ where: { userId }, update, create }) => {
+      const goal = { id: `goal-${userId}`, ...(goals.get(userId) || create), ...(goals.has(userId) ? update : {}) };
+      goals.set(userId, goal);
+      return goal;
+    },
+    findUnique: async ({ where: { userId } }) => goals.get(userId) || null,
   },
 };
 
@@ -35,4 +74,38 @@ test('users can sign up and use a protected route', async () => {
   const profile = await request(app).get('/health/me').set('Authorization', `Bearer ${signup.body.token}`);
   assert.equal(profile.status, 200);
   assert.equal(profile.body.user.email, 'test@example.com');
+});
+
+test('authenticated users can complete and retrieve their profile', async () => {
+  const signup = await request(app).post('/auth/signup').send({ email: 'profile@example.com', password: 'safe-password' });
+  const auth = { Authorization: `Bearer ${signup.body.token}` };
+
+  const saveProfile = await request(app).post('/profile').set(auth).send({
+    heightCm: 170,
+    currentWeightKg: 70,
+    activityLevel: 'moderately_active',
+  });
+  assert.equal(saveProfile.status, 200);
+  assert.equal(saveProfile.body.profile.bmi, 24.2);
+
+  const record = await request(app).post('/profile/medical-record').set(auth).send({
+    medicalRecord: 'User-entered summary: iron deficiency was previously noted in a health record.',
+  });
+  assert.equal(record.status, 200);
+  assert.match(record.body.medicalRecord, /User-entered summary/);
+
+  const condition = await request(app).post('/profile/medical-conditions').set(auth).send({ name: 'Iron deficiency', notes: 'Self-reported' });
+  assert.equal(condition.status, 201);
+
+  const goal = await request(app).post('/profile/goal').set(auth).send({ targetWeightKg: 65, targetDate: '2026-12-31' });
+  assert.equal(goal.status, 200);
+  assert.equal(goal.body.goal.targetWeightKg, 65);
+
+  const loaded = await request(app).get('/profile').set(auth);
+  assert.equal(loaded.status, 200);
+  assert.equal(loaded.body.medicalConditions.length, 1);
+  assert.equal(loaded.body.goal.targetWeightKg, 65);
+
+  const remove = await request(app).delete(`/profile/medical-conditions/${condition.body.medicalCondition.id}`).set(auth);
+  assert.equal(remove.status, 204);
 });
