@@ -96,7 +96,7 @@ test('authenticated users can complete and retrieve their profile', async () => 
   assert.equal(record.status, 200);
   assert.match(record.body.medicalRecord, /User-entered summary/);
 
-  const condition = await request(app).post('/profile/medical-conditions').set(auth).send({ name: 'Iron deficiency', notes: 'Self-reported' });
+  const condition = await request(app).post('/profile/medical-conditions').set(auth).send({ name: 'Iron deficiency anemia', notes: 'Self-reported' });
   assert.equal(condition.status, 201);
 
   const goal = await request(app).post('/profile/goal').set(auth).send({ targetWeightKg: 65, targetDate: '2026-12-31' });
@@ -107,6 +107,10 @@ test('authenticated users can complete and retrieve their profile', async () => 
   assert.equal(calorieTarget.status, 200);
   assert.equal(calorieTarget.body.direction, 'lose');
   assert.equal(calorieTarget.body.calorieTarget, 1751);
+
+  const nutrientFlags = await request(app).get('/nutrient-flags').set(auth);
+  assert.equal(nutrientFlags.status, 200);
+  assert.equal(nutrientFlags.body.flags[0].considerations[0].nutrient, 'Iron');
 
   const loaded = await request(app).get('/profile').set(auth);
   assert.equal(loaded.status, 200);

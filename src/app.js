@@ -6,6 +6,8 @@ const { createProfileController } = require('./controllers/profileController');
 const { createProfileRoutes } = require('./routes/profileRoutes');
 const { createCalorieController } = require('./controllers/calorieController');
 const { createCalorieRoutes } = require('./routes/calorieRoutes');
+const { createNutrientController } = require('./controllers/nutrientController');
+const { createNutrientRoutes } = require('./routes/nutrientRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 function createApp(prisma) {
@@ -15,6 +17,7 @@ function createApp(prisma) {
   app.use('/health', createHealthRoutes());
   app.use('/profile', createProfileRoutes(createProfileController(prisma)));
   app.use('/calorie-target', createCalorieRoutes(createCalorieController(prisma)));
+  app.use('/nutrient-flags', createNutrientRoutes(createNutrientController(prisma)));
   app.use(notFound);
   app.use(errorHandler);
   return app;

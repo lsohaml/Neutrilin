@@ -19,6 +19,7 @@ Available endpoints:
 - `POST` / `DELETE /profile/medical-conditions` to manage self-reported conditions
 - `POST` / `GET /profile/goal` to save or retrieve a desired weight or BMI
 - `GET /calorie-target` for an explainable, safety-bounded daily calorie estimate
+- `GET /nutrient-flags` for conservative nutrition considerations tied to conditions the user entered
 
 Run the initial API checks with `npm test`.
 
