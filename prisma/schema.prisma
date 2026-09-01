@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  passwordHash      String
+  createdAt         DateTime           @default(now())
+  profile           Profile?
+  medicalConditions MedicalCondition[]
+  weightGoal        WeightGoal?
+  dailyLogs         DailyLog[]
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  heightCm        Float
+  currentWeightKg Float
+  activityLevel   String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MedicalCondition {
+  id     String @id @default(cuid())
+  userId String
+  name   String
+  notes  String?
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WeightGoal {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  targetWeightKg Float?
+  targetBmi      Float?
+  targetDate     DateTime?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DailyLog {
+  id               String   @id @default(cuid())
+  userId           String
+  date             DateTime
+  caloriesConsumed Int      @default(0)
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}

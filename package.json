@@ -1,0 +1,29 @@
+{
+  "name": "neutrilin-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo API for the Neutrilin health assistant",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.1",
+    "supertest": "^7.2.2"
+  }
+}
