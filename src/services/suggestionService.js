@@ -5,10 +5,6 @@ function dayStart(date = new Date()) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
-function extractText(response) {
-  return response.content.filter((block) => block.type === 'text').map((block) => block.text).join('\n');
-}
-
 function parseSuggestions(text) {
   const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
   const parsed = JSON.parse(cleaned);
@@ -31,7 +27,7 @@ User data:
 - Activity level: ${profile.activityLevel}`;
 }
 
-function createSuggestionService({ prisma, anthropic, now = () => new Date() }) {
+function createSuggestionService({ prisma, ai, now = () => new Date() }) {
   const recentRequests = new Map();
   return {
     async getTodaySuggestions(userId) {
@@ -57,20 +53,16 @@ function createSuggestionService({ prisma, anthropic, now = () => new Date() }) 
         error.status = 429;
         throw error;
       }
-      if (!anthropic) {
-        const error = new Error('AI suggestions are not configured yet. Add ANTHROPIC_API_KEY to the server environment.');
+      if (!ai) {
+        const error = new Error('AI suggestions are not configured yet. Add GEMINI_API_KEY to the server environment.');
         error.status = 503;
         throw error;
       }
 
       recentRequests.set(userId, now().getTime());
       const target = calculateCalorieTarget(profile, goal);
-      const response = await anthropic.messages.create({
-        model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5',
-        max_tokens: 700,
-        messages: [{ role: 'user', content: buildPrompt({ profile, dailyLog, target, flags: getNutrientFlags(conditions) }) }],
-      });
-      const suggestions = parseSuggestions(extractText(response));
+      const responseText = await ai.generate(buildPrompt({ profile, dailyLog, target, flags: getNutrientFlags(conditions) }));
+      const suggestions = parseSuggestions(responseText);
       const expiresAt = new Date(now().getTime() + 6 * 60 * 60 * 1000);
       await prisma.suggestionCache.upsert({
         where: { userId_date: { userId, date: today } },

@@ -17,12 +17,12 @@ test('AI suggestions are grounded in the saved daily data and then cached', asyn
       upsert: async ({ create }) => { cachedRecord = create; return create; },
     },
   };
-  const anthropic = { messages: { create: async ({ messages }) => {
+  const ai = { generate: async (prompt) => {
     calls += 1;
-    lastPrompt = messages[0].content;
-    return { content: [{ type: 'text', text: '{"suggestions":[{"suggestion":"Choose a balanced lunch.","why":"You have logged 1,000 kcal against your target."}]}' }] };
-  } } };
-  const service = createSuggestionService({ prisma, anthropic, now });
+    lastPrompt = prompt;
+    return '{"suggestions":[{"suggestion":"Choose a balanced lunch.","why":"You have logged 1,000 kcal against your target."}]}';
+  } };
+  const service = createSuggestionService({ prisma, ai, now });
 
   const fresh = await service.getTodaySuggestions('user-1');
   assert.equal(fresh.cached, false);

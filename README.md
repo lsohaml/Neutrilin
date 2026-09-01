@@ -20,7 +20,7 @@ Available endpoints:
 - `POST` / `GET /profile/goal` to save or retrieve a desired weight or BMI
 - `GET /calorie-target` for an explainable, safety-bounded daily calorie estimate
 - `GET /nutrient-flags` for conservative nutrition considerations tied to conditions the user entered
-- `GET /suggestions` for cached, data-grounded AI wellness suggestions (requires `ANTHROPIC_API_KEY`)
+- `GET /suggestions` for cached, data-grounded AI wellness suggestions (requires `GEMINI_API_KEY`)
 - `POST /logs`, `GET /logs?date=`, and `GET /logs/summary?date=` for manual meal logging and calorie budget tracking
 
 Food entries are manual estimates for now. The `FoodEntry` model is the extension point for a future food-database or barcode lookup.

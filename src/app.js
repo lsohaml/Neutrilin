@@ -18,7 +18,7 @@ const { createProgressController } = require('./controllers/progressController')
 const { createProgressRoutes } = require('./routes/progressRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
-function createApp(prisma, anthropic = null) {
+function createApp(prisma, ai = null) {
   const app = express();
   const allowedOrigin = process.env.CORS_ORIGIN;
   app.use(cors({ origin: allowedOrigin ? allowedOrigin.split(',').map((origin) => origin.trim()) : false }));
@@ -28,7 +28,7 @@ function createApp(prisma, anthropic = null) {
   app.use('/profile', createProfileRoutes(createProfileController(prisma)));
   app.use('/calorie-target', createCalorieRoutes(createCalorieController(prisma)));
   app.use('/nutrient-flags', createNutrientRoutes(createNutrientController(prisma)));
-  app.use('/suggestions', createSuggestionRoutes(createSuggestionController(createSuggestionService({ prisma, anthropic }))));
+  app.use('/suggestions', createSuggestionRoutes(createSuggestionController(createSuggestionService({ prisma, ai }))));
   app.use('/logs', createLogRoutes(createLogController(prisma)));
   app.use('/progress', createProgressRoutes(createProgressController(prisma)));
   app.use(notFound);
