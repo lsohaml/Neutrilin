@@ -10,6 +10,7 @@ const users = new Map();
 const profiles = new Map();
 const conditions = new Map();
 const goals = new Map();
+const foodEntries = [];
 let nextConditionId = 1;
 const prisma = {
   user: {
@@ -57,6 +58,15 @@ const prisma = {
   },
   dailyLog: {
     findUnique: async () => null,
+    upsert: async () => null,
+  },
+  foodEntry: {
+    create: async ({ data }) => {
+      const entry = { id: `entry-${foodEntries.length + 1}`, ...data, createdAt };
+      foodEntries.push(entry);
+      return entry;
+    },
+    findMany: async ({ where: { userId, loggedAt } }) => foodEntries.filter((entry) => entry.userId === userId && (!loggedAt || (entry.loggedAt >= loggedAt.gte && entry.loggedAt < loggedAt.lt))),
   },
   suggestionCache: {
     findUnique: async () => null,
@@ -118,6 +128,13 @@ test('authenticated users can complete and retrieve their profile', async () => 
   const nutrientFlags = await request(app).get('/nutrient-flags').set(auth);
   assert.equal(nutrientFlags.status, 200);
   assert.equal(nutrientFlags.body.flags[0].considerations[0].nutrient, 'Iron');
+
+  const food = await request(app).post('/logs').set(auth).send({ name: 'Oatmeal', calories: 320, loggedAt: '2026-09-01T08:00:00.000Z' });
+  assert.equal(food.status, 201);
+  assert.equal(food.body.caloriesConsumed, 320);
+  const summary = await request(app).get('/logs/summary?date=2026-09-01').set(auth);
+  assert.equal(summary.status, 200);
+  assert.equal(summary.body.remainingCalories, 1431);
 
   const suggestions = await request(app).get('/suggestions').set(auth);
   assert.equal(suggestions.status, 503);

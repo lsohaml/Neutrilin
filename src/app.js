@@ -11,6 +11,8 @@ const { createNutrientRoutes } = require('./routes/nutrientRoutes');
 const { createSuggestionService } = require('./services/suggestionService');
 const { createSuggestionController } = require('./controllers/suggestionController');
 const { createSuggestionRoutes } = require('./routes/suggestionRoutes');
+const { createLogController } = require('./controllers/logController');
+const { createLogRoutes } = require('./routes/logRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 function createApp(prisma, anthropic = null) {
@@ -22,6 +24,7 @@ function createApp(prisma, anthropic = null) {
   app.use('/calorie-target', createCalorieRoutes(createCalorieController(prisma)));
   app.use('/nutrient-flags', createNutrientRoutes(createNutrientController(prisma)));
   app.use('/suggestions', createSuggestionRoutes(createSuggestionController(createSuggestionService({ prisma, anthropic }))));
+  app.use('/logs', createLogRoutes(createLogController(prisma)));
   app.use(notFound);
   app.use(errorHandler);
   return app;

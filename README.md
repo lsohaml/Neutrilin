@@ -21,6 +21,9 @@ Available endpoints:
 - `GET /calorie-target` for an explainable, safety-bounded daily calorie estimate
 - `GET /nutrient-flags` for conservative nutrition considerations tied to conditions the user entered
 - `GET /suggestions` for cached, data-grounded AI wellness suggestions (requires `ANTHROPIC_API_KEY`)
+- `POST /logs`, `GET /logs?date=`, and `GET /logs/summary?date=` for manual meal logging and calorie budget tracking
+
+Food entries are manual estimates for now. The `FoodEntry` model is the extension point for a future food-database or barcode lookup.
 
 Run the initial API checks with `npm test`.
 

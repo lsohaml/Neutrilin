@@ -16,6 +16,7 @@ model User {
   medicalConditions MedicalCondition[]
   weightGoal        WeightGoal?
   dailyLogs         DailyLog[]
+  foodEntries       FoodEntry[]
   suggestionCaches  SuggestionCache[]
 }
 
@@ -60,6 +61,18 @@ model DailyLog {
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
+}
+
+model FoodEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  calories  Int
+  loggedAt  DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, loggedAt])
 }
 
 model SuggestionCache {
