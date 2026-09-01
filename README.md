@@ -31,6 +31,10 @@ Progress endpoints: `POST /progress/weight` logs a periodic weight; `GET /progre
 
 Deploy the API and UI separately. Set `CORS_ORIGIN` on the API to the deployed NutriGuide URL, and set `VITE_API_BASE_URL` in the frontend to the deployed API URL. Use the respective `.env.example` files as starting points; never place server secrets in the frontend environment.
 
+### Recommended production deployment
+
+Use a managed PostgreSQL provider such as Neon, deploy the Express API as a Render Web Service, and deploy `Neutrilin/NutriGuide` as a Vercel Vite project. For the API, use build command `npm ci && npx prisma migrate deploy && npm run build`, start command `npm start`, and health-check path `/health`. Configure `DATABASE_URL`, `JWT_SECRET`, `GEMINI_API_KEY`, `GEMINI_MODEL`, and `CORS_ORIGIN` as deployment secrets. In Vercel, set `VITE_API_BASE_URL` to the complete Render API URL, such as `https://neutrilin-api.onrender.com`.
+
 Run the initial API checks with `npm test`.
 
 Medical information is never pre-populated. Users enter it themselves; this demo does not diagnose conditions or interpret a record as medical advice.

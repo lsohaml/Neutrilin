@@ -7,7 +7,7 @@ validateEnvironment();
 
 const port = Number(process.env.PORT || 4000);
 const app = createApp(prisma, createGeminiClient());
-const server = app.listen(port, () => console.log(`Neutrilin API is listening on http://localhost:${port}`));
+const server = app.listen(port, '0.0.0.0', () => console.log(`Neutrilin API is listening on port ${port}`));
 
 async function shutdown() {
   await prisma.$disconnect();
