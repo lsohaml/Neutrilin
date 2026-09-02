@@ -1,16 +1,41 @@
-# React + Vite
+# NutriGuide frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This frontend is wired to the Neutrilin Express API at `http://localhost:4000` by default.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Start the Neutrilin API in the parent folder:
 
-## React Compiler
+```powershell
+cd ..
+npm install
+npm run prisma:generate
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. In a second terminal, start this frontend:
 
-## Expanding the ESLint configuration
+```powershell
+cd NutriGuide
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Open the Vite URL shown in the terminal, normally `http://localhost:5173`.
+
+The frontend stores the JWT returned by `/auth/login` or `/auth/signup` in local storage and sends it as a Bearer token to protected API routes.
+
+For a different API host, create `.env` from `.env.example` and set `VITE_API_BASE_URL`.
+
+## Implemented API-connected features
+
+- Sign up / sign in
+- Dashboard with today's live calorie summary and meal entries
+- Manual food logging
+- Profile save/retrieve
+- Goal save/retrieve
+- Progress weight logging and history
+- AI suggestions page using `/suggestions`
+- Nutrient flags page using `/nutrient-flags`
+
+The API's own restrictions still apply. In particular, personalized calorie targets require the profile fields accepted by the backend, and AI suggestions require `GEMINI_API_KEY` on the server.
